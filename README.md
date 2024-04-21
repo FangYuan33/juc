@@ -34,6 +34,12 @@
 
 - eg: life.fangyuan.juc.common.ReentrantLockExample
 
+#### Semaphore 信号量
+
+如果某段逻辑限制 N 个线程执行，而我们的线程数又大于 N，那么可以使用 `Semaphore` 信号量来限制线程执行的数量。`Semaphore` 可以控制同时访问的线程个数，通过 acquire() 方法获取一个许可，如果没有许可，线程就会阻塞，直到有可用信号量为止；通过 release() 方法释放一个许可。
+
+- eg: life.fangyuan.juc.common.SemaphoreExample
+
 ### Single Threaded Execution 模式：能通过这座桥的只有一个人
 
 Single Threaded Execution 模式是一种非常基础的设计模式，它侧重的点是 **执行处理的线程**，目的是确保在同一时刻 **只有一个线程** 执行 **指定的代码块（临界区）**。这种模式在多线程环境下非常有用，因为它可以避免多个线程同时访问共享资源，从而避免数据竞争和数据不一致的问题。
