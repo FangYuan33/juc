@@ -11,4 +11,9 @@ public class Synchronized {
         System.out.println("test2");
         Thread.sleep(2000);
     }
+
+    public synchronized static void test3() throws InterruptedException {
+        System.out.println("test3");
+        Thread.sleep(2000);
+    }
 }
