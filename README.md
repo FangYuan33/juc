@@ -33,3 +33,21 @@
 #### 线程的协作：ReentrantLock 和 Condition
 
 - eg: life.fangyuan.juc.common.ReentrantLockExample
+
+### Single Threaded Execution 模式：能通过这座桥的只有一个人
+
+Single Threaded Execution 模式是一种非常基础的设计模式，它侧重的点是 **执行处理的线程**，目的是确保在同一时刻 **只有一个线程** 执行 **指定的代码块（临界区）**。这种模式在多线程环境下非常有用，因为它可以避免多个线程同时访问共享资源，从而避免数据竞争和数据不一致的问题。
+
+> 该模式的适用场景：当多个线程同时访问共享资源且共享资源的状态会发生变化时
+
+- eg: life.fangyuan.juc.SingleThreadedExecution.Main
+
+在这个例子中，多线程情况下调用 life.fangyuan.juc.SingleThreadedExecution.Gate.pass 方法会出现问题，因为多个线程同时访问共享资源 Gate 且会对它的状态进行修改，导致数据不一致。通过使用 Single Threaded Execution 模式，即在该方法上标记 synchronized 关键字，可以避免这个问题。
+
+在该模式中提到了死锁，避免死锁的解决方法：
+
+1. 锁顺序：所有线程按照相同的顺序来获取锁
+2. 减小锁的粒度：比如将原来的多个锁合并成一个锁
+3. 锁超时：即尝试获取锁的时候，如果超过一定时间还没有获取到锁，就放弃获取锁
+4. 避免锁嵌套：尽量避免在持有锁的时候再去获取锁
+5. 死锁检测：通过工具检测死锁，发现死锁后，通过中断线程等方式来解除死锁
