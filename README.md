@@ -57,3 +57,15 @@ Single Threaded Execution 模式是一种非常基础的设计模式，它侧重
 3. 锁超时：即尝试获取锁的时候，如果超过一定时间还没有获取到锁，就放弃获取锁
 4. 避免锁嵌套：尽量避免在持有锁的时候再去获取锁
 5. 死锁检测：通过工具检测死锁，发现死锁后，通过中断线程等方式来解除死锁
+
+### Immutable 模式：想破坏也破坏不了
+
+Immutable 模式是一种非常基础的设计模式，它侧重的点是 **对象的状态**，目的是确保对象的状态在创建之后 **不会发生变化**。这样该对象在多线程环境下访问时不会出现数据竞争和数据不一致的问题，该模式的优点是无需使用 synchronized 关键字，在频繁访问的情况下提高性能。
+
+该如何使用：
+1. 将类的字段设置为 private final，并且不提供 setter 方法
+2. 如果字段是可变对象，需要确保在构造函数中创建新的对象，而不是直接引用传入的对象，并且该创建的新对象也是不可变的
+
+Java 中使用到 Immutable 模式的类有：String、BigInteger、BigDecimal、基本数据类型的包装类（Integer、Long和Double等）、LocalDate、LocalTime、LocalDateTime 等
+
+eg: life.fangyuan.juc.Immutable.Person
