@@ -12,7 +12,7 @@
 
 #### synchronized 关键字
 
-在Java中，synchronized 关键字可以用来给对象和方法加锁。当一个线程访问 syncronized 修饰的方法或代码块时，它会自动获取锁，其他线程则必须等待该线程释放锁后才能获取锁来访问被保护的代码段。如果一个对象有两个被 synchronized 标记的不同方法，那么这两个方法共享同一个对象锁。因此，如果一个线程正在执行其中一个 synchronized 方法，其他线程不能同时执行这两个方法中的任何一个，它们必须等待第一个线程释放锁，这是因为 synchronized 关键字在**对象级别**上添加了一个互斥锁（或监视器锁）。当一个线程获取了对象的锁，其他线程无法通过，直到锁被释放。
+在Java中，synchronized 关键字可以用来给对象和方法加锁，需要注意 synchronized 保护的是什么。当一个线程访问 syncronized 修饰的方法或代码块时，它会自动获取锁，其他线程则必须等待该线程释放锁后才能获取锁来访问被保护的代码段。如果一个对象有两个被 synchronized 标记的不同方法，那么这两个方法共享同一个对象锁。因此，如果一个线程正在执行其中一个 synchronized 方法，其他线程不能同时执行这两个方法中的任何一个，它们必须等待第一个线程释放锁，这是因为 synchronized 关键字在**对象级别**上添加了一个互斥锁（或监视器锁）。当一个线程获取了对象的锁，其他线程无法通过，直到锁被释放。
 
 如果多线程同时执行同一个对象的被 synchronized 修饰的实例方法和静态方法，多线程是不会被阻塞的，因为实例方法和静态方法分别使用的是对象锁和类锁，它们之间是互不干扰的。
 
@@ -26,7 +26,7 @@
 - obj.notify(): 是唤醒 obj 对象的等待队列中的一个线程，如果有多个线程在等待队列中，只会唤醒其中一个
 - obj.notifyAll(): 是唤醒 obj 对象的等待队列中的所有线程
 
-与其说这三个方法是针对线程的操作，倒不如说是针对实例的等待队列的操作，**并且是持有哪个对象的锁才能进入哪个对象的等待队列**，而且一般来说，使用 notifyAll() 方法的代码更加健壮，因为 notify() 方法只会唤醒一个线程，如果唤醒的是一个不应该被唤醒的线程，那么这个线程就会一直等待下去，所以我们在编写程序时，也不要编写针对特定线程才能处理的逻辑
+与其说这三个方法是针对线程的操作，倒不如说是针对实例的等待队列的操作，**并且是持有哪个对象的锁才能进入哪个对象的等待队列**，当线程进入等待队列而停止执行时，并不会浪费 Java 虚拟机的执行时间。而且一般来说，使用 notifyAll() 方法的代码更加健壮，因为 notify() 方法只会唤醒一个线程，如果唤醒的是一个不应该被唤醒的线程，那么这个线程就会一直等待下去，所以我们在编写程序时，也不要编写针对特定线程才能处理的逻辑
 
 - eg: life.fangyuan.juc.common.WaitAndNotify: 通过 wait() 和 notifyAll() 实现线程协作输出 a b
 
@@ -34,11 +34,27 @@
 
 - eg: life.fangyuan.juc.common.ReentrantLockExample
 
+#### Thread.yield()
+
+`Thread.yield()` 方法是一个静态方法，它会让当前线程让出 CPU，但是**不会释放锁**，而是重新进入就绪状态，等待系统重新调度，所以会浪费 Java 虚拟机的执行时间。`Thread.yield()` 方法的作用是让相同优先级的线程有执行的机会，但是不能保证一定会让出 CPU，只是让出 CPU 的可能性增加了，因为这是由操作系统调度的。
+
+#### Thread.interrupt()
+
+`Thread.interrupt()` 方法是一个实例方法，它会中断线程的执行，但是并不会立即停止线程，而是给线程发送一个中断信号，线程可以通过 `isInterrupted()` 方法来判断是否被中断，如果被中断则返回 true，否则返回 false。如果线程处于阻塞状态，比如调用了 `wait()`、`sleep()`、`join()` 方法，那么线程会抛出 `InterruptedException` 异常，这时可以通过捕获异常来处理中断。
+
+- eg: life.fangyuan.juc.GuardedSuspension.Main
+
+#### Thread.join()
+
+todo
+
 #### Semaphore 信号量
 
 如果某段逻辑限制 N 个线程执行，而我们的线程数又大于 N，那么可以使用 `Semaphore` 信号量来限制线程执行的数量。`Semaphore` 可以控制同时访问的线程个数，通过 acquire() 方法获取一个许可，如果没有许可，线程就会阻塞，直到有可用信号量为止；通过 release() 方法释放一个许可。
 
 - eg: life.fangyuan.juc.common.SemaphoreExample
+
+---
 
 ### Single Threaded Execution 模式：能通过这座桥的只有一个人
 
@@ -68,4 +84,14 @@ Immutable 模式是一种非常基础的设计模式，它侧重的点是 **对�
 
 Java 中使用到 Immutable 模式的类有：String、BigInteger、BigDecimal、基本数据类型的包装类（Integer、Long和Double等）、LocalDate、LocalTime、LocalDateTime 等
 
-eg: life.fangyuan.juc.Immutable.Person
+- eg: life.fangyuan.juc.Immutable.Person
+
+### Guarded Suspension 模式：等我准备好哦
+
+Guarded Suspension 模式侧重的点是 **等待条件**，目的是确保在 **满足条件** 之后才执行 **指定的代码块**。这种模式在多线程环境下非常有用，因为它可以避免在条件不满足的情况下执行代码，从而避免数据不一致的问题。这个与先前学过的多线程中生产者与消费者问题一致，**等待、业务和唤醒** 是理解这个模式的精髓所在：
+
+- 等待：`while` 循环判断等待条件，满足条件时释放锁进行等待队列（调用 `wait()` 方法），并等待 `notify()/notifyAll()` 方法的调用，这里使用 while 判断是为了避免虚假唤醒，即线程被唤醒后再次判断等待条件是否满足。这种等待的判断机制也被称为 **自旋锁 Spin Lock**，
+- 业务：业务的是指定的代码块
+- 唤醒：满足业务代码的执行条件，调用 `notify()/notifyAll()` 方法
+
+- eg: life.fangyuan.juc.GuardedSuspension.RequestQueue
