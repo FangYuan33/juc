@@ -46,7 +46,19 @@
 
 #### Thread.join()
 
-todo
+`Thread.join()` 是 Java 中的一个实例方法，这个方法的主要作用是让当前执行的线程暂停运行，直到调用 `join()` 方法的线程执行完毕。当你在一个线程实例上调用 `join()` 方法时，当前执行的线程将被阻塞，直到调用 `join()` 的线程实例完成其执行。这个方法常用于在一个线程中等待另一个线程的完成。 
+
+`Thread.join()` 方法有三种形式：
+
+- `void join() throws InterruptedException`：等待这个线程执行完毕
+- `void join(long millis) throws InterruptedException`：等待这个线程执行完毕，最多等待 `millis` 毫秒
+- `void join(long millis, int nanos) throws InterruptedException`：等待这个线程执行完毕，最多等待 `millis` 毫秒加 `nanos` 纳秒
+
+如果线程在给定的时间内没有结束，那么 `join()` 方法将返回，程序将继续执行。如果没有指定时间，那么 `join()` 方法将一直阻塞，直到线程结束。  
+
+**需要注意的是**：`Thread.join()` 方法可能会抛出 `InterruptedException`。当一个线程已经被 `join`、`sleep` 或 `wait` 方法阻塞，那么如果另一个线程中断（interrupt）了它，那么它将抛出一个 `InterruptedException`。
+
+- eg: life.fangyuan.juc.common.JoinExample
 
 #### Semaphore 信号量
 
@@ -90,8 +102,8 @@ Java 中使用到 Immutable 模式的类有：String、BigInteger、BigDecimal�
 
 Guarded Suspension 模式侧重的点是 **等待条件**，目的是确保在 **满足条件** 之后才执行 **指定的代码块**。这种模式在多线程环境下非常有用，因为它可以避免在条件不满足的情况下执行代码，从而避免数据不一致的问题。这个与先前学过的多线程中生产者与消费者问题一致，**等待、业务和唤醒** 是理解这个模式的精髓所在：
 
-- 等待：`while` 循环判断等待条件，满足条件时释放锁进行等待队列（调用 `wait()` 方法），并等待 `notify()/notifyAll()` 方法的调用，这里使用 while 判断是为了避免虚假唤醒，即线程被唤醒后再次判断等待条件是否满足。这种等待的判断机制也被称为 **自旋锁 Spin Lock**，
-- 业务：业务的是指定的代码块
+- 等待：`while` 循环判断等待条件，满足条件时释放锁进行等待队列（调用 `wait()` 方法），并等待 `notify()/notifyAll()` 方法的调用，这里使用 while 判断是为了避免虚假唤醒，即线程被唤醒后再次判断等待条件是否满足。这种等待的判断机制也被称为 **自旋锁 Spin Lock**
+- 业务：业务是指要执行的代码块
 - 唤醒：满足业务代码的执行条件，调用 `notify()/notifyAll()` 方法
 
 - eg: life.fangyuan.juc.GuardedSuspension.RequestQueue
