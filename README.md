@@ -158,3 +158,11 @@ Guarded Suspension 模式侧重的点是 **等待条件**，目的是确保在 *
 Thread Per Message 模式是为 **每个任务/请求** 分配 **一个独立的线程** 来执行，任务/请求之间不会相互影响，但是也不能保证执行的顺序。这种模式可以提高响应性，缩短延迟时间，但是频繁创建和销毁线程也会带来开销，所以该模式需要配合线程池来使用。
 
 - eg: life.fangyuan.juc.ThreadPerMessage.Main
+
+### Thread Pool 模式：工作没来就一直等，工作来了就立马干
+
+Thread Pool 模式是为了解决 Thread Per Message 模式中 **频繁创建和销毁线程的开销问题**，它通过 **预先创建一定数量的线程** 并将它们保存在一个线程池中，当有任务/请求到来时，就从线程池中取出一个线程来执行，执行完毕后再将线程放回线程池中，实现线程复用。这种模式可以提高吞吐量和响应速度，控制线程容量，减少线程创建和销毁的开销，不过也需要注意一些问题，比如线程池的大小如何设置和线程池的拒绝策略等。
+
+方法的调用被称为 invocation，方法的执行被称为 execution，**Thread Per Message 模式** 和 **Thread Pool 模式** 都能够将方法的 **调用与执行分离**，这也是 Command 模式的思想，Runnable 接口可以看作是 Command 模式中的 Command 角色
+
+- eg: life.fangyuan.juc.WorkerThread.Main
