@@ -166,3 +166,9 @@ Thread Pool 模式是为了解决 Thread Per Message 模式中 **频繁创建和
 方法的调用被称为 invocation，方法的执行被称为 execution，**Thread Per Message 模式** 和 **Thread Pool 模式** 都能够将方法的 **调用与执行分离**，这也是 Command 模式的思想，Runnable 接口可以看作是 Command 模式中的 Command 角色
 
 - eg: life.fangyuan.juc.WorkerThread.Main
+
+### Future 模式：先给您提货单
+
+Future 模式是为了解决 **调用者** 和 **执行者** 之间的 **耦合** 问题，它通过 **提供一个 Future 接口** 来表示 **未来的结果**。方法的调用者可以将任务交给其他线程去处理，无需阻塞等待方法的执行，这样调用者可以继续执行其他任务，并能通过 `Future` 对象获取到执行结果。这种模式可以提高系统的吞吐量和响应速度，实现方法调用和执行的解耦。
+
+- eg: life.fangyuan.juc.Future.origin.Main
