@@ -91,6 +91,10 @@ Java 线程的状态主要有以下几种：
 
 - eg: life.fangyuan.juc.GuardedSuspension.Main
 
+#### InterruptedException
+
+方法签名中标记 `throws InterruptedException` 表示该方法**可以被取消**。
+
 #### Thread.join()
 
 `Thread.join()` 是 Java 中的一个实例方法，这个方法的主要作用是让当前执行的线程暂停运行，直到调用 `join()` 方法的线程执行完毕。当你在一个线程实例上调用 `join()` 方法时，当前执行的线程将被阻塞，直到调用 `join()` 的线程实例完成其执行。这个方法常用于在一个线程中等待另一个线程的完成。 
