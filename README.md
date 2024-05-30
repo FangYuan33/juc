@@ -61,7 +61,7 @@ Java 线程的状态主要有以下几种：
 
 与其说这三个方法是针对线程的操作，倒不如说是针对实例的等待队列的操作，**并且是持有哪个对象的锁才能进入哪个对象的等待队列**，当线程进入等待队列而停止执行时，并**不会浪费 Java 虚拟机的执行时间**。而且一般来说，使用 notifyAll() 方法的代码更加健壮，因为 notify() 方法只会唤醒一个线程，如果唤醒的是一个不应该被唤醒的线程，那么这个线程就会一直等待下去，所以我们在编写程序时，也不要编写针对特定线程才能处理的逻辑
 
-- eg: life.fangyuan.juc.common.WaitAndNotify: 通过 wait() 和 notifyAll() 实现线程协作输出 a b
+- eg: life.fangyuan.juc.common.WaitAndNotify: 通过 `wait()` 和 `notifyAll()` 实现线程协作输出 a b
 
 #### 线程的协作：ReentrantLock 和 Condition
 
@@ -87,13 +87,19 @@ Java 线程的状态主要有以下几种：
 
 #### Thread.interrupt()
 
-`Thread.interrupt()` 方法是一个实例方法，它会中断线程的执行，但是并不会立即停止线程，而是给线程发送一个中断信号，线程可以通过 `isInterrupted()` 方法来判断是否被中断，如果被中断则返回 true，否则返回 false。如果线程处于阻塞状态，比如调用了 `wait()`、`sleep()`、`join()` 方法，那么线程会抛出 `InterruptedException` 异常，这时可以通过捕获异常来处理中断。
+`Thread.interrupt()` 方法是一个 **实例方法**，它会中断线程的执行，但是并不会立即停止线程，而是给线程发送一个中断信号，改变线程的中断状态，线程可以通过 `isInterrupted()` 方法来判断是否被中断，如果被中断则返回 true，否则返回 false。如果线程处于阻塞状态（比如调用了 `Object.wait()`、`Thread.sleep()`、`Thread.join()` 方法），那么线程会抛出 `InterruptedException` 异常，这时可以通过捕获异常来处理中断。
+
+> `Object.wait()` 方法被中断与 `Thread.sleep()` 被中断是有区别的：`Object.wait()` 在进入 `Object` 的等待队列时，会释放掉锁，被 interrupt() 中断时，不会立即抛出 `InterruptedException` 异常，而是在下一次获取锁时抛出 `InterruptedException` 异常；而 `Thread.sleep()` 在进入阻塞状态时，不会释放锁，被 interrupt() 中断时，会立即抛出 `InterruptedException` 异常 
+
+`Thread` 类中有一个静态方法 `Thread.interrupted()`，它是会检查并清除当前线程的中断状态的：如果当前线程被其他线程调用了 `interrupt()` 方法，那么 `Thread.interrupted()` 方法会返回 true，同时清除当前线程的中断状态，即将中断状态重新设置为 false；如果当前线程没有被中断，那么 `Thread.interrupted()` 方法会返回 false
+
+> 注意不要使用 `Thread.stop()` 的实例方法，因为它会立即终止线程，即使是当前线程正在进行临界区的操作，这些操作都会被立即停止，这就可能会导致线程的资源没有释放，使得程序出现不可预知的问题
 
 - eg: life.fangyuan.juc.GuardedSuspension.Main
 
 #### InterruptedException
 
-方法签名中标记 `throws InterruptedException` 表示该方法**可以被取消**。
+方法签名中标记 `throws InterruptedException` 表示两种含义，第一种比较容易被想到，表示该方法**可以被取消**；第二种含义是，这个方法耗时可能比较长。Java 中比较典型的方法有：
 
 #### Thread.join()
 
