@@ -156,7 +156,20 @@ int maxPoolSize = corePoolSize;
 
 这四种策略各有适用的场景，具体使用哪种策略取决于你的具体需求。例如，如果你希望任务不被丢弃，也不抛出异常，那么可以选择`CallerRunsPolicy`，让调用者线程自己来执行任务。如果你希望能够抛出异常，及时感知到线程池的饱和，可以使用`AbortPolicy`。如果你希望某些任务如果无法处理就丢弃掉，那么可以选择`DiscardPolicy`或者`DiscardOldestPolicy`。
 
-除此之外，你还可以实现`RejectedExecutionHandler`接口，自定义拒绝策略。自定义的拒绝策略可以更灵活地处理被拒绝的任务，例如，你可以将被拒绝的任务存储起来，等线程池有空闲时再添加到线程池中执行。
+除此之外，可以实现`RejectedExecutionHandler`接口，自定义拒绝策略。自定义的拒绝策略可以更灵活地处理被拒绝的任务，例如，你可以将被拒绝的任务存储起来，等线程池有空闲时再添加到线程池中执行。
+
+#### 阻塞队列 BlockingQueue
+
+`BlockingQueue` 是 `Java` 并发包中的一个接口，它是 `Queue` 接口的扩展，主要用于实现 **生产者-消费者模式**。`BlockingQueue` 不仅支持队列的基本操作，如插入、移除和检查元素，还支持当队列为空时，获取元素（take）的操作会被阻塞，当队列已满时，插入元素（put）的操作会被阻塞，如下是它的常见实现类：
+
+- `ArrayBlockingQueue`：由数组实现的有界阻塞队列
+- `LinkedBlockingQueue`：由链表实现的 **可选** 有界阻塞队列
+- `PriorityBlockingQueue`：支持优先级排序的无界阻塞队列
+- `DelayQueue`：支持延迟获取元素的无界阻塞队列
+- `SynchronousQueue`：不存储元素的阻塞队列。每一个 put 操作必须等待一个 take 操作，否则不能继续添加元素，反之亦然。适用于传递性场景
+- `LinkedTransferQueue`：由链表实现的无界阻塞队列，适用于生产者和消费者的数量差距较大，或者生产者和消费者的处理速度差距较大的场景
+
+> `LinkedTransferQueue` 的 `transfer(E)` 方法是其主要特性：如果有消费者正在等待，元素会直接传递给消费者，而不放入队列中；如果没有消费者正在等待，元素会放入队列中，并等待消费者取走。这个方法是阻塞的，即如果没有消费者取走元素，`transfer(E)` 方法会一直阻塞。这使得 `LinkedTransferQueue` 适用于生产者和消费者的数量或处理速度有较大差距的场景。例如，如果生产者的速度远大于消费者的速度，使用 `LinkedTransferQueue` 可以避免生产者因队列满而阻塞。因为 `LinkedTransferQueue` 是无界队列，生产者可以无限制地向队列中添加元素，只有当生产者调用 `transfer(E)` 方法并且没有消费者正在等待时，生产者才会阻塞。这样，即使生产者的数量多于消费者，也不会因队列满而导致生产者阻塞。总的来说，`LinkedTransferQueue` 的这种特性使得它能够在生产者和消费者的数量或速度有较大差距的场景下，保持良好的性能和稳定性
 
 #### Semaphore 信号量
 
