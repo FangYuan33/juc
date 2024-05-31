@@ -233,6 +233,12 @@ Producer Consumer 强调的是 **生产者** 和 **消费者** 之间的 **协�
 
 - eg: life.fangyuan.juc.ProducerConsumer.Main
 
+### Read Write Lock 模式：大家一起读没问题，但写的时候只能一个人喔
+
+ReadWriteLock 模式是为了解决 **读写操作** 之间的 **互斥** 问题，它通过 **读锁** 和 **写锁** 来实现对共享资源的 **并发访问**。读锁是 **共享锁**，多个线程可以同时获取读锁，读锁之间不会互斥；写锁是 **排他锁**，只有一个线程可以获取写锁，写锁和读锁之间会互斥。这种模式可以提高系统的并发性能，适用于读操作远远多于写操作的场景
+
+- eg: life.fangyuan.juc.ReadWriteLock.ReadWriteLock; java.util.concurrent.locks.ReentrantReadWriteLock
+
 ### Thread Per Message 模式：这项工作就交给你了
 
 Thread Per Message 模式是为 **每个任务/请求** 分配 **一个独立的线程** 来执行，任务/请求之间不会相互影响，但是也不能保证执行的顺序。这种模式可以提高响应性，缩短延迟时间，但是频繁创建和销毁线程也会带来开销，所以该模式需要配合线程池来使用。
