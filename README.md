@@ -91,7 +91,7 @@ Java 线程的状态主要有以下几种：
 
 > `Object.wait()` 方法被中断与 `Thread.sleep()` 被中断是有区别的：`Object.wait()` 在进入 `Object` 的等待队列时，会释放掉锁，被 interrupt() 中断时，不会立即抛出 `InterruptedException` 异常，而是在下一次获取锁时抛出 `InterruptedException` 异常；而 `Thread.sleep()` 在进入阻塞状态时，不会释放锁，被 interrupt() 中断时，会立即抛出 `InterruptedException` 异常 
 
-`Thread` 类中有一个静态方法 `Thread.interrupted()`，它是会检查并清除当前线程的中断状态的：如果当前线程被其他线程调用了 `interrupt()` 方法，那么 `Thread.interrupted()` 方法会返回 true，同时清除当前线程的中断状态，即将中断状态重新设置为 false；如果当前线程没有被中断，那么 `Thread.interrupted()` 方法会返回 false
+`Thread` 类中有一个静态方法 `Thread.interrupted()`，它是会检查并清除当前线程的中断状态的：如果调用了当前线程的 `interrupt()` 方法，那么 `Thread.interrupted()` 方法会返回 true，同时清除当前线程的中断状态，即将中断状态重新设置为 false；如果当前线程没有被中断，那么 `Thread.interrupted()` 方法会返回 false。该静态方法并不会抛出 `InterruptedException` 异常
 
 > 注意不要使用 `Thread.stop()` 的实例方法，因为它会立即终止线程，即使是当前线程正在进行临界区的操作，这些操作都会被立即停止，这就可能会导致线程的资源没有释放，使得程序出现不可预知的问题
 
@@ -171,11 +171,26 @@ int maxPoolSize = corePoolSize;
 
 > `LinkedTransferQueue` 的 `transfer(E)` 方法是其主要特性：如果有消费者正在等待，元素会直接传递给消费者，而不放入队列中；如果没有消费者正在等待，元素会放入队列中，并等待消费者取走。这个方法是阻塞的，即如果没有消费者取走元素，`transfer(E)` 方法会一直阻塞。这使得 `LinkedTransferQueue` 适用于生产者和消费者的数量或处理速度有较大差距的场景。例如，如果生产者的速度远大于消费者的速度，使用 `LinkedTransferQueue` 可以避免生产者因队列满而阻塞。因为 `LinkedTransferQueue` 是无界队列，生产者可以无限制地向队列中添加元素，只有当生产者调用 `transfer(E)` 方法并且没有消费者正在等待时，生产者才会阻塞。这样，即使生产者的数量多于消费者，也不会因队列满而导致生产者阻塞。总的来说，`LinkedTransferQueue` 的这种特性使得它能够在生产者和消费者的数量或速度有较大差距的场景下，保持良好的性能和稳定性
 
+#### volatile 关键字
+
+在 Java 内存模型中，如果想要在多个线程间共享字段，需要使用 `synchronized` 关键字保护字段或是将字段声明为 `volatile`，否则，其他线程可能看不到某个线程修改了这个字段。如果使用了 `synchronized` 关键字，需要执行线程间的互斥和同步；而如果将其声明为 `volatile`，则可以保证字段的可见性，但是不能保证原子性。`volatile` 则只需执行同步。
+
+`volatile` 主要用于保证变量的 **可见性** 和 **禁止指令重排序**：
+
+- **可见性**：在 Java 中，每个线程都有自己的工作内存（可以理解为 CPU 的缓存），线程对变量的所有操作都必须在工作内存中进行，然后再同步回主内存。这就可能导致一个线程修改了一个变量的值，而另一个线程看不到这个修改。`volatile` 关键字就是用来解决这个问题的，当一个共享变量被 `volatile` 修饰时，那么每次读取该变量时都会直接从主内存中读取，每次写入该变量时都会立即同步回主内存，从而保证了每个线程都能看到该变量的最新值
+- **禁止指令重排序**：在执行程序时，为了提高性能，编译器和处理器常常会对指令做重排序。但是，在某些情况下，指令重排序可能会导致程序结果不正确。`volatile` 关键字可以禁止指令重排序。具体来说，编译器和处理器在执行程序时，不会对 `volatile` 变量前后的代码做重排序
+
+需要注意的是，`volatile` 关键字只能保证单个读/写的原子性，即读取和写入操作是原子操作，不会被中断。但是 `volatile` 不能保证复合操作的原子性。例如，i++ 操作就不是一个原子操作，它包含了读取、修改和写入三个操作，`volatile` 不能保证这三个操作作为一个整体的原子性。
+
 #### Semaphore 信号量
 
 如果某段逻辑限制 N 个线程执行，而我们的线程数又大于 N，那么可以使用 `Semaphore` 信号量来限制线程执行的数量。`Semaphore` 可以控制同时访问的线程个数，通过 acquire() 方法获取一个许可，如果没有许可，线程就会阻塞，直到有可用信号量为止；通过 release() 方法释放一个许可。
 
 - eg: life.fangyuan.juc.common.SemaphoreExample
+
+#### CountDownLatch
+
+#### CyclicBarrier
 
 ---
 
@@ -258,3 +273,9 @@ Thread Pool 模式是为了解决 Thread Per Message 模式中 **频繁创建和
 Future 模式是为了解决 **调用者** 和 **执行者** 之间的 **耦合** 问题，它通过 **提供一个 Future 接口** 来表示 **未来的结果**。方法的调用者可以将任务交给其他线程去处理，无需阻塞等待方法的执行，这样调用者可以继续执行其他任务，并能通过 `Future` 对象获取到执行结果。这种模式可以提高系统的吞吐量和响应速度，实现方法调用和执行的解耦。
 
 - eg: life.fangyuan.juc.Future.origin.Main
+
+### Two-Phase Termination 模式：先通知你一声，再关门
+
+Two-Phase Termination 模式是为了解决 **线程的安全终止** 问题，它通过 **两阶段终止** 来确保线程的 **安全终止**。第一阶段是通知线程终止，第二阶段是等待线程终止。这种模式可以保证线程在终止时能够正确释放资源，避免资源泄露和数据不一致的问题。
+
+- eg: life.fangyuan.juc.TwoPhaseTermination.CountUpThread
