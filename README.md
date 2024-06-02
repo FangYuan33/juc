@@ -192,6 +192,8 @@ int maxPoolSize = corePoolSize;
 
 #### CyclicBarrier
 
+#### ThreadLocal
+
 ---
 
 ### Single Threaded Execution 模式：能通过这座桥的只有一个人
@@ -285,3 +287,9 @@ Two-Phase Termination 模式是为了解决 **线程的安全终止** 问题，�
 Thread-Specific Storage 模式 **为每个线程定义存储空间**，解决的是 **线程的局部存储** 问题，可以通过 **ThreadLocal** 来实现线程的局部存储，就像在一个储物柜中为每个线程分配一格储物间，保证线程之间互不干扰，但是这种方法会降低代码的可读性。
 
 - life.fangyuan.juc.ThreadSpecificStorage.sample2.Log
+
+### Active Object 模式：接收异步消息的主动对象
+
+Active Object 模式实际上是综合了很多模式，许多对象一起协作来组成一个“主动的对象”，其中通过**异步消息的处理**，实现解耦。
+
+- eg: life.fangyuan.juc.ActiveObject.Main
