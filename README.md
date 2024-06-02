@@ -279,3 +279,9 @@ Future 模式是为了解决 **调用者** 和 **执行者** 之间的 **耦合*
 Two-Phase Termination 模式是为了解决 **线程的安全终止** 问题，它通过 **两阶段终止** 来确保线程的 **安全终止**。第一阶段是通知线程终止，第二阶段是等待线程终止。这种模式可以保证线程在终止时能够正确释放资源，避免资源泄露和数据不一致的问题。
 
 - eg: life.fangyuan.juc.TwoPhaseTermination.CountUpThread
+
+### Thread-Specific Storage 模式：一个线程一个储物柜
+
+Thread-Specific Storage 模式 **为每个线程定义存储空间**，解决的是 **线程的局部存储** 问题，可以通过 **ThreadLocal** 来实现线程的局部存储，就像在一个储物柜中为每个线程分配一格储物间，保证线程之间互不干扰，但是这种方法会降低代码的可读性。
+
+- life.fangyuan.juc.ThreadSpecificStorage.sample2.Log
