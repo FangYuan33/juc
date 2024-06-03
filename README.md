@@ -208,6 +208,14 @@ int maxPoolSize = corePoolSize;
 
 #### ThreadLocal
 
+`ThreadLocal` 是 Java 中的一个类，它提供了 **线程局部变量**。这些变量与普通变量的区别在于：每个访问这个 `ThreadLocal` 变量的线程都有自己独立初始化的变量副本。可以将 `ThreadLocal` 对象想象为一个储物柜，**每个线程只在这个储物柜中分配了一个格子**，即对于每条线程只保存一个变量，但这个储物柜能被多条线程访问，它们会从这个储物柜中拿取属于自己的变量。
+
+通常情况下，`ThreadLocal` 实例被定义为类中的私有静态对象，以此来保存与线程相关联的信息。
+
+`ThreadLocal` 的底层实现原理是：每个 `Thread` 维护了一个 `ThreadLocalMap`，这个 `ThreadLocalMap` 是 `ThreadLocal` 的内部类。在这个 `ThreadLocalMap` 中，`ThreadLocal` 对象作为 key，而我们设置的值作为 `value`。当我们通过 `ThreadLocal` 的 `get()` 或 `set()` 方法访问变量时，实际上是通过当前线程去查找或修改其 `ThreadLocalMap` 中的值。
+
+![ThreadLocal](src/main/resources/images/ThreadLocal.drawio.png)
+
 ---
 
 ### Single Threaded Execution 模式：能通过这座桥的只有一个人
