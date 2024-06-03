@@ -198,11 +198,15 @@ int maxPoolSize = corePoolSize;
 
 #### Semaphore 信号量
 
-如果某段逻辑限制 N 个线程执行，而我们的线程数又大于 N，那么可以使用 `Semaphore` 信号量来限制线程执行的数量。`Semaphore` 可以控制同时访问的线程个数，通过 acquire() 方法获取一个许可，如果没有许可，线程就会阻塞，直到有可用信号量为止；通过 release() 方法释放一个许可。
+如果某段逻辑限制 N 个线程执行，而我们的线程数又大于 N，那么可以使用 `Semaphore` 信号量来限制线程执行的数量（限流）。`Semaphore` 可以控制同时访问的线程个数，通过 `acquire()` 方法获取一个许可，如果没有许可，线程就会阻塞，直到有可用信号量为止；通过 `release()` 方法释放一个许可。
 
 - eg: life.fangyuan.juc.common.SemaphoreExample
 
 #### CountDownLatch
+
+如果需要 **主线程等待若干其他线程执行完毕后再执行**，可以使用 `CountDownLatch` 来实现。`CountDownLatch` 是一个 **计数器**，初始化为一个正整数，表示需要等待任务完成的数量。每完成一个任务调用 `countDown()` 方法执行计数器减一；主线程调用 `await()` 方法会被阻塞，直到计数器的值为 0。
+
+- eg: life.fangyuan.juc.common.CountDownLatchExample
 
 #### CyclicBarrier
 
