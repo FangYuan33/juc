@@ -194,7 +194,72 @@ int maxPoolSize = corePoolSize;
 
 #### 单例模式
 
+- **饿汉式**
 
+这种方式在类加载时就完成了初始化，所以线程是安全的，但是它没有达到懒加载的效果。
+
+```java
+public class Singleton {
+   private static Singleton instance = new Singleton();
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        return instance;
+    }
+}
+```
+
+- **双重检测锁（Double-Checked Locking）**
+
+```java
+public class Singleton {
+    private volatile static Singleton instance;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+
+在单例模式中，`volatile` 关键字主要用于保证单例对象的多线程环境下的安全发布。
+
+在创建单例对象时，主要涉及到以下三个步骤：
+
+1. 分配内存空间
+2. 初始化对象
+3. 将对象指向刚分配的内存空间
+
+但是由于Java编译器的优化和JVM的即时编译器的优化（JIT），上述的创建对象的三个步骤可能会被重排序，可能会变成 1->3->2 的执行顺序。在单线程环境下，无论怎么重排序，程序执行的结果都不会改变。但是在多线程环境下，假设线程A执行了1和3，此时线程B调用了 `getInstance()`，由于单例对象已经被线程A创建，所以线程B直接返回了单例对象，然后使用这个单例对象，由于此时线程A还没有执行步骤2，也就是还没有对单例对象进行初始化，所以线程B就 **可能访问到一个未初始化的单例对象**，这就出现了问题。
+
+`volatile` 关键字可以禁止指令重排序。当单例对象被声明为 `volatile` 后，其创建的过程就不会被重排序，从而避免了上述的问题。所以，在双重检查锁定的单例模式中，需要将单例对象声明为 `volatile`。
+
+- **静态内部类**
+
+这种方式是利用了 **类加载的特点**，即 **内部类只有在第一次被使用的时候才会被加载**，这样就可以保证单例对象只有在第一次被使用的时候才会被初始化。这种方式既保证了线程安全，又能做到延迟加载。
+
+```java
+public class Singleton {
+    private static class SingletonHolder {
+        private static final Singleton INSTANCE = new Singleton();
+    }
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+}
+```
 
 #### Semaphore 信号量
 
