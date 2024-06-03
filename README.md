@@ -204,13 +204,13 @@ int maxPoolSize = corePoolSize;
 
 #### CountDownLatch
 
-如果需要 **主线程等待若干其他线程执行完毕后再执行**，可以使用 `CountDownLatch` 来实现。`CountDownLatch` 是一个 **计数器**，初始化为一个正整数，表示需要等待任务完成的数量。每完成一个任务调用 `countDown()` 方法执行计数器减一；主线程调用 `await()` 方法会被阻塞，直到计数器的值为 0。
+如果需要 **主线程等待若干其他线程执行完毕后再执行**，可以使用 `CountDownLatch` 来实现。`CountDownLatch` 是一个 **计数器**，初始化为一个正整数，表示需要等待任务完成的数量。每完成一个任务调用 `countDown()` 方法执行计数器减一；主线程调用 `await()` 方法会被阻塞，直到计数器的值为 0。`CountDownLatch` 的计数是不能被重置的。
 
 - eg: life.fangyuan.juc.common.CountDownLatchExample
 
 #### CyclicBarrier
 
-如果需要 **协调多个线程之间的同步，直到所有线程都准备就绪再一起继续执行**，可以使用 `CyclicBarrier` 来实现。`CyclicBarrier` 本质上也是一个计数器，它的构造方法接收一个整数参数，表示需要等待就绪的线程数量，每个线程调用 `await()` 方法会将计数器减一，当计数器的值为 0 时，所有线程会被释放，继续执行。
+如果需要 **协调多个线程之间的同步，直到所有线程都准备就绪再一起继续执行**，可以使用 `CyclicBarrier` 来实现。`CyclicBarrier` 本质上也是一个计数器，它的构造方法接收一个整数参数，表示需要等待就绪的线程数量，每个线程调用 `await()` 方法会将计数器减一，当计数器的值为 0 时，所有线程会被释放，继续执行。`CyclicBarrier` 是一个循环屏障，它的计数是可以被重置的：每次计数值为 0 时，会调用一个回调函数，重置计数器，等待下一轮的计数
 
 - eg: life.fangyuan.juc.common.CyclicBarrierExample
 
