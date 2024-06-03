@@ -210,6 +210,10 @@ int maxPoolSize = corePoolSize;
 
 #### CyclicBarrier
 
+如果需要 **协调多个线程之间的同步，直到所有线程都准备就绪再一起继续执行**，可以使用 `CyclicBarrier` 来实现。`CyclicBarrier` 本质上也是一个计数器，它的构造方法接收一个整数参数，表示需要等待就绪的线程数量，每个线程调用 `await()` 方法会将计数器减一，当计数器的值为 0 时，所有线程会被释放，继续执行。
+
+- eg: life.fangyuan.juc.common.CyclicBarrierExample
+
 #### ThreadLocal
 
 `ThreadLocal` 是 Java 中的一个类，它提供了 **线程局部变量**。这些变量与普通变量的区别在于：每个访问这个 `ThreadLocal` 变量的线程都有自己独立初始化的变量副本。可以将 `ThreadLocal` 对象想象为一个储物柜，**每个线程只在这个储物柜中分配了一个格子**，即对于每条线程只保存一个变量，但这个储物柜能被多条线程访问，它们会从这个储物柜中拿取属于自己的变量。
